@@ -22,6 +22,10 @@ public class CartellaEsattorialeDTO {
 	@NotNull(message = "{contribuente.notnull}")
 	private ContribuenteDTO contribuente;
 
+	public CartellaEsattorialeDTO() {
+		super();
+	}
+
 	public CartellaEsattorialeDTO(Long id, String descrizione, Integer importo, StatoCartellaEsattoriale stato,
 			ContribuenteDTO contribuente) {
 		super();
@@ -115,10 +119,10 @@ public class CartellaEsattorialeDTO {
 	}
 
 	public static List<CartellaEsattorialeDTO> createCartellaEsattorialeDTOListFromModelList(
-			List<CartellaEsattoriale> modelListInput, boolean includeRegisti) {
+			List<CartellaEsattoriale> modelListInput, boolean includeContribuente) {
 		return modelListInput.stream().map(cartellaEsattorialeEntity -> {
 			return CartellaEsattorialeDTO.buildCartellaEsattorialeDTOFromModel(cartellaEsattorialeEntity,
-					includeRegisti);
+					includeContribuente);
 		}).collect(Collectors.toList());
 	}
 }

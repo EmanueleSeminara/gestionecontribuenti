@@ -11,6 +11,8 @@ public interface CartellaEsattorialeService {
 
 	public CartellaEsattoriale caricaSingoloElemento(Long id);
 
+	public CartellaEsattoriale caricaSingoloElementoEager(Long id);
+
 	public void aggiorna(CartellaEsattoriale cartellaEsattorialeInstance);
 
 	public void inserisciNuovo(CartellaEsattoriale cartellaEsattorialeInstance);

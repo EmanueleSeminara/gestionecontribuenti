@@ -11,8 +11,6 @@ public interface ContribuenteService {
 
 	public Contribuente caricaSingoloElemento(Long id);
 
-	public Contribuente caricaSingoloElementoConFilms(Long id);
-
 	public void aggiorna(Contribuente contribuenteInstance);
 
 	public void inserisciNuovo(Contribuente contribuenteInstance);
@@ -23,5 +21,7 @@ public interface ContribuenteService {
 
 	public Page<Contribuente> findByExampleWithPagination(Contribuente example, Integer pageNo, Integer pageSize,
 			String sortBy);
+
+	public List<Contribuente> cercaByCognomeENomeILike(String term);
 
 }

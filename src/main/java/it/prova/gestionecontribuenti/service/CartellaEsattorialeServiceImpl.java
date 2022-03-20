@@ -49,13 +49,14 @@ public class CartellaEsattorialeServiceImpl implements CartellaEsattorialeServic
 		repository.delete(cartellaEsattorialeInstance);
 	}
 
-	@Override
+	@Transactional
 	public void rimuoviById(Long idCartellaEsattoriale) {
 		repository.deleteById(idCartellaEsattoriale);
 
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<CartellaEsattoriale> findByExampleWithPagination(CartellaEsattoriale example, Integer pageNo,
 			Integer pageSize, String sortBy) {
 		Specification<CartellaEsattoriale> specificationCriteria = (root, query, cb) -> {
@@ -86,6 +87,11 @@ public class CartellaEsattorialeServiceImpl implements CartellaEsattorialeServic
 			paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
 
 		return repository.findAll(specificationCriteria, paging);
+	}
+
+	@Transactional(readOnly = true)
+	public CartellaEsattoriale caricaSingoloElementoEager(Long id) {
+		return repository.findSingleCartellaEsattorialeEager(id);
 	}
 
 }

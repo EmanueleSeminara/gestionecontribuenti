@@ -1,5 +1,6 @@
 package it.prova.gestionecontribuenti.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -12,4 +13,7 @@ public interface ContribuenteRepository
 		extends PagingAndSortingRepository<Contribuente, Long>, JpaSpecificationExecutor<Contribuente> {
 	@EntityGraph(attributePaths = { "cartelleEsattoriali" })
 	Optional<Contribuente> findById(Long id);
+
+	List<Contribuente> findByCognomeIgnoreCaseContainingOrNomeIgnoreCaseContainingOrderByNomeAsc(String cognome,
+			String nome);
 }

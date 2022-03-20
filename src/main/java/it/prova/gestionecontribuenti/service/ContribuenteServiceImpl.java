@@ -15,7 +15,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import it.prova.gestionecontribuenti.exceptions.ContribuenteConFilmException;
+import it.prova.gestionecontribuenti.exceptions.ContribuenteConCartelleEsattorialiException;
 import it.prova.gestionecontribuenti.exceptions.ElementNotFoundException;
 import it.prova.gestionecontribuenti.model.Contribuente;
 import it.prova.gestionecontribuenti.repository.ContribuenteRepository;
@@ -33,11 +33,6 @@ public class ContribuenteServiceImpl implements ContribuenteService {
 	@Transactional(readOnly = true)
 	public Contribuente caricaSingoloElemento(Long id) {
 		return repository.findById(id).orElse(null);
-	}
-
-	@Transactional(readOnly = true)
-	public Contribuente caricaSingoloElementoConFilms(Long id) {
-		return null;
 	}
 
 	@Transactional
@@ -73,8 +68,9 @@ public class ContribuenteServiceImpl implements ContribuenteService {
 				predicates.add(cb.like(cb.upper(root.get("codiceFiscae")),
 						"%" + example.getCodiceFiscale().toUpperCase() + "%"));
 
-			if (example.getIndirizzo() != null)
-				predicates.add(cb.equal(root.get("indirizzo"), example.getIndirizzo()));
+			if (StringUtils.isNotEmpty(example.getIndirizzo()))
+				predicates.add(
+						cb.like(cb.upper(root.get("indirizzo")), "%" + example.getIndirizzo().toUpperCase() + "%"));
 
 			if (example.getDataDiNascita() != null)
 				predicates.add(cb.greaterThanOrEqualTo(root.get("dataDiNascita"), example.getDataDiNascita()));
@@ -102,11 +98,15 @@ public class ContribuenteServiceImpl implements ContribuenteService {
 			throw new ElementNotFoundException("Non esiste un contribuente associato a questo id");
 		}
 		if (contribuenteDaEliminare.getCartelleEsattoriali().size() != 0) {
-			throw new ContribuenteConFilmException(
+			throw new ContribuenteConCartelleEsattorialiException(
 					"Impossibile eliminare il contribuente, sono presenti film associati");
 		}
 		repository.deleteById(idContribuente);
 
 	}
 
+	@Transactional(readOnly = true)
+	public List<Contribuente> cercaByCognomeENomeILike(String term) {
+		return repository.findByCognomeIgnoreCaseContainingOrNomeIgnoreCaseContainingOrderByNomeAsc(term, term);
+	}
 }
