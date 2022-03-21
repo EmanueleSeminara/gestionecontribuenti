@@ -10,7 +10,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import it.prova.gestionecontribuenti.model.CartellaEsattoriale;
 import it.prova.gestionecontribuenti.model.Contribuente;
 import it.prova.gestionecontribuenti.model.StatoCartellaEsattoriale;
 
@@ -28,7 +27,7 @@ public class ContribuenteConCartelleDTO {
 	@NotBlank(message = "{indirizzo.notblank}")
 	private String indirizzo;
 
-	private Set<CartellaEsattoriale> cartelleEsattoriali = new HashSet<>();
+	private Set<CartellaEsattorialeDTO> cartelleEsattoriali = new HashSet<>();
 
 	public ContribuenteConCartelleDTO() {
 		super();
@@ -66,7 +65,7 @@ public class ContribuenteConCartelleDTO {
 			@NotNull(message = "{dataDiNascita.notnull}") Date dataDiNascita,
 			@NotBlank(message = "{codiceFiscale.notblank}") @Size(min = 16, max = 16, message = "Il valore inserito '${validatedValue}' deve essere lungo tra {min} e {max} caratteri") String codiceFiscale,
 			@NotBlank(message = "{indirizzo.notblank}") String indirizzo,
-			Set<CartellaEsattoriale> cartelleEsattoriali) {
+			Set<CartellaEsattorialeDTO> cartelleEsattoriali) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -134,7 +133,10 @@ public class ContribuenteConCartelleDTO {
 		return new ContribuenteConCartelleDTO(contribuenteModel.getId(), contribuenteModel.getNome(),
 				contribuenteModel.getCognome(), contribuenteModel.getDataDiNascita(),
 				contribuenteModel.getCodiceFiscale(), contribuenteModel.getIndirizzo(),
-				contribuenteModel.getCartelleEsattoriali());
+				CartellaEsattorialeDTO
+						.createCartellaEsattorialeDTOListFromModelList(
+								contribuenteModel.getCartelleEsattoriali().stream().collect(Collectors.toList()), true)
+						.stream().collect(Collectors.toSet()));
 	}
 
 	public static List<ContribuenteConCartelleDTO> createContribuenteConCartelleDTOListFromModelList(
@@ -145,7 +147,7 @@ public class ContribuenteConCartelleDTO {
 	}
 
 	public boolean isInContenzioso() {
-		for (CartellaEsattoriale cartellaEsattorialeItem : this.cartelleEsattoriali) {
+		for (CartellaEsattorialeDTO cartellaEsattorialeItem : this.cartelleEsattoriali) {
 			if (cartellaEsattorialeItem.getStato().equals(StatoCartellaEsattoriale.IN_CONTENZIOSO)) {
 				return true;
 			}
@@ -155,7 +157,7 @@ public class ContribuenteConCartelleDTO {
 
 	public Integer totaleImportoCartelle() {
 		Integer result = 0;
-		for (CartellaEsattoriale cartellaEsattorialeItem : this.cartelleEsattoriali) {
+		for (CartellaEsattorialeDTO cartellaEsattorialeItem : this.cartelleEsattoriali) {
 			result += cartellaEsattorialeItem.getImporto();
 		}
 		return result;
@@ -163,7 +165,7 @@ public class ContribuenteConCartelleDTO {
 
 	public Integer totaleConclusoEPagato() {
 		Integer result = 0;
-		for (CartellaEsattoriale cartellaEsattorialeItem : this.cartelleEsattoriali) {
+		for (CartellaEsattorialeDTO cartellaEsattorialeItem : this.cartelleEsattoriali) {
 			if (cartellaEsattorialeItem.getStato().equals(StatoCartellaEsattoriale.CONCLUSA)) {
 				result += cartellaEsattorialeItem.getImporto();
 			}
@@ -173,7 +175,7 @@ public class ContribuenteConCartelleDTO {
 
 	public Integer totaleInContenzioso() {
 		Integer result = 0;
-		for (CartellaEsattoriale cartellaEsattorialeItem : this.cartelleEsattoriali) {
+		for (CartellaEsattorialeDTO cartellaEsattorialeItem : this.cartelleEsattoriali) {
 			if (cartellaEsattorialeItem.getStato().equals(StatoCartellaEsattoriale.IN_CONTENZIOSO)) {
 				result += cartellaEsattorialeItem.getImporto();
 			}

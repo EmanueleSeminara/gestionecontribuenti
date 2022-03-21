@@ -41,7 +41,7 @@ public class ContribuenteController {
 	@GetMapping
 	public ModelAndView listAllContribuenti() {
 		ModelAndView mv = new ModelAndView();
-		List<Contribuente> contribuenti = contribuenteService.listAllElements();
+		List<Contribuente> contribuenti = contribuenteService.listAllElementsEager();
 		// trasformiamo in DTO
 		mv.addObject("contribuenti_list_attribute",
 				ContribuenteConCartelleDTO.createContribuenteConCartelleDTOListFromModelList(contribuenti));
@@ -58,12 +58,10 @@ public class ContribuenteController {
 	@PostMapping("/save")
 	public String saveContribuente(@Valid @ModelAttribute("insert_contribuente_attr") ContribuenteDTO contribuenteDTO,
 			BindingResult result, RedirectAttributes redirectAttrs) {
-		System.out.println(result);
 
 		if (result.hasErrors()) {
 			return "contribuente/insert";
 		}
-		System.out.println("SEI ARRIVATO QUI");
 		contribuenteService.inserisciNuovo(contribuenteDTO.buildContribuenteModel());
 
 		redirectAttrs.addFlashAttribute("successMessage", "Operazione eseguita correttamente");
@@ -72,7 +70,6 @@ public class ContribuenteController {
 
 	@GetMapping("/search")
 	public String searchContribuente() {
-		System.out.println("SEI DENTRO!");
 		return "contribuente/search";
 	}
 
@@ -81,10 +78,8 @@ public class ContribuenteController {
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "0") Integer pageSize,
 			@RequestParam(defaultValue = "id") String sortBy, ModelMap model) {
 
-		List<Contribuente> contribuenti = contribuenteService
-				.findByExampleWithPagination(contribuenteExample.buildContribuenteModel(), pageNo, pageSize, sortBy)
-				.getContent();
-		System.out.println(contribuenti);
+		List<Contribuente> contribuenti = contribuenteService.findByExampleWithPaginationEager(
+				contribuenteExample.buildContribuenteModel(), pageNo, pageSize, sortBy).getContent();
 		model.addAttribute("contribuenti_list_attribute",
 				ContribuenteConCartelleDTO.createContribuenteConCartelleDTOListFromModelList(contribuenti));
 		return "contribuente/list";
@@ -147,7 +142,6 @@ public class ContribuenteController {
 
 	@PostMapping("/remove")
 	public String remove(@RequestParam(required = true) Long idDaRimuovere, RedirectAttributes redirectAttrs) {
-		System.out.println("ID: " + idDaRimuovere);
 		try {
 			contribuenteService.rimuoviById(idDaRimuovere);
 		} catch (ElementNotFoundException enf) {

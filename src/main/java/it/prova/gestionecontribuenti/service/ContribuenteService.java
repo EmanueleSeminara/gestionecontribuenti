@@ -9,6 +9,8 @@ import it.prova.gestionecontribuenti.model.Contribuente;
 public interface ContribuenteService {
 	public List<Contribuente> listAllElements();
 
+	public List<Contribuente> listAllElementsEager();
+
 	public Contribuente caricaSingoloElemento(Long id);
 
 	public void aggiorna(Contribuente contribuenteInstance);
@@ -20,6 +22,9 @@ public interface ContribuenteService {
 	public void rimuoviById(Long idContribuente);
 
 	public Page<Contribuente> findByExampleWithPagination(Contribuente example, Integer pageNo, Integer pageSize,
+			String sortBy);
+
+	public Page<Contribuente> findByExampleWithPaginationEager(Contribuente example, Integer pageNo, Integer pageSize,
 			String sortBy);
 
 	public List<Contribuente> cercaByCognomeENomeILike(String term);

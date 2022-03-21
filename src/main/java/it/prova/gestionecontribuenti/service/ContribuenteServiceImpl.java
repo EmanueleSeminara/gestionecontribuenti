@@ -3,6 +3,7 @@ package it.prova.gestionecontribuenti.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
@@ -88,6 +89,46 @@ public class ContribuenteServiceImpl implements ContribuenteService {
 		return repository.findAll(specificationCriteria, paging);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public Page<Contribuente> findByExampleWithPaginationEager(Contribuente example, Integer pageNo, Integer pageSize,
+			String sortBy) {
+		Specification<Contribuente> specificationCriteria = (root, query, cb) -> {
+
+			List<Predicate> predicates = new ArrayList<Predicate>();
+
+			if (StringUtils.isNotEmpty(example.getNome()))
+				predicates.add(cb.like(cb.upper(root.get("nome")), "%" + example.getNome().toUpperCase() + "%"));
+
+			if (StringUtils.isNotEmpty(example.getCognome()))
+				predicates.add(cb.like(cb.upper(root.get("cognome")), "%" + example.getCognome().toUpperCase() + "%"));
+
+			if (StringUtils.isNotEmpty(example.getCodiceFiscale()))
+				predicates.add(cb.like(cb.upper(root.get("codiceFiscae")),
+						"%" + example.getCodiceFiscale().toUpperCase() + "%"));
+
+			if (StringUtils.isNotEmpty(example.getIndirizzo()))
+				predicates.add(
+						cb.like(cb.upper(root.get("indirizzo")), "%" + example.getIndirizzo().toUpperCase() + "%"));
+
+			if (example.getDataDiNascita() != null)
+				predicates.add(cb.greaterThanOrEqualTo(root.get("dataDiNascita"), example.getDataDiNascita()));
+
+			root.fetch("cartelleEsattoriali", JoinType.LEFT);
+
+			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+		};
+
+		Pageable paging = null;
+		// se non passo parametri di paginazione non ne tengo conto
+		if (pageSize == null || pageSize < 10)
+			paging = Pageable.unpaged();
+		else
+			paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
+
+		return repository.findAll(specificationCriteria, paging);
+	}
+
 	@Transactional
 	public void rimuoviById(Long idContribuente) {
 		if (idContribuente == null) {
@@ -108,5 +149,10 @@ public class ContribuenteServiceImpl implements ContribuenteService {
 	@Transactional(readOnly = true)
 	public List<Contribuente> cercaByCognomeENomeILike(String term) {
 		return repository.findByCognomeIgnoreCaseContainingOrNomeIgnoreCaseContainingOrderByNomeAsc(term, term);
+	}
+
+	@Override
+	public List<Contribuente> listAllElementsEager() {
+		return repository.findAllEager();
 	}
 }

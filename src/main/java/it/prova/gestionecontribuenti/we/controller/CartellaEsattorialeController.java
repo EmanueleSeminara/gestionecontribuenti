@@ -47,7 +47,6 @@ public class CartellaEsattorialeController {
 
 	@GetMapping("/insert")
 	public String createCartellaEsattoriale(Model model) {
-		System.out.println("CI SEI BRO");
 		model.addAttribute("insert_cartellaesattoriale_attr", new CartellaEsattorialeDTO());
 		return "cartellaesattoriale/insert";
 	}
